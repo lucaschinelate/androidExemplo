@@ -1,4 +1,4 @@
-package agile.core;
+package agile.core.system.activity;
 
 import android.app.Activity;
 import agile.core.system.*;

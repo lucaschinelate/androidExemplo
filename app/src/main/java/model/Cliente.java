@@ -1,6 +1,8 @@
 package model;
 
-import agile.core.orm.*;
+import agile.core.orm.annotation.Entity;
+import agile.core.orm.annotation.Field;
+import agile.core.orm.annotation.Id;
 
 /**
  * Created by Lucas Chinelate on 14/02/2018.
@@ -9,11 +11,14 @@ import agile.core.orm.*;
 @Entity(tableName = "CLIENTE")
 public class Cliente {
 
+    @Id
     @Field(fieldName = "ID")
-    public Integer id;
+    private Integer id;
 
     @Field(fieldName = "NOME")
-    public String nome;
+    private String nome;
+
+    private String teste;
 
     public int getId() {
         return this.id;

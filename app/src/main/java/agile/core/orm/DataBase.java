@@ -1,12 +1,14 @@
 package agile.core.orm;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.List;
 import agile.core.orm.connector.Connector;
 import android.database.Cursor;
-import android.util.Log;
+
+import agile.core.orm.dictionary.*;
+import agile.core.orm.dictionary.Entity;
+import agile.core.orm.helpers.*;
+
 
 /**
  * Created by Lucas Chinelate on 14/02/2018.
@@ -16,52 +18,19 @@ public class DataBase {
     private Connector connector;
     private List<String> DDAList; //DIRECT DATABASE ACCESSS LIST
     private String SQL;
+    private dictionaryHelper dictionary;
 
     public void persist (Object entity) {
         SQL = "";
-        String tableName = "";
 
-        Annotation an = entity.getClass().getAnnotation(Entity.class);
-        Entity En = (Entity) an;
-        tableName = En.tableName();
+        dictionary = new dictionaryHelper();
 
-        Log.i("AGILE","Tabela: " + tableName);
-        Log.i("AGILE","-----------CAMPOS----------");
-        Object valorAtributo = null;
-        for (java.lang.reflect.Field att: entity.getClass().getDeclaredFields()) {
-
-            an = att.getAnnotation(Field.class);
-            if (an != null) {
-                Field field = (Field) an;
-                att.setAccessible(true);
-                try {
-                    valorAtributo = att.get(entity);
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-
-                if (valorAtributo == null) {
-                    Log.i("AGILE", field.fieldName() + ": " + att.getName() + " -> 'Null'" );
-                } else {
-                    Log.i("AGILE",field.fieldName() + ": " + att.getName() + " -> " + valorAtributo.toString());
-                }
-            }
-        }
-        /*
-        for (EntityField field: entity.getEntityFields()){
-            SQL = field.getField();
-        }
-        */
+        Entity iEntity = dictionary.extractEntity(entity);
         DDAList.add(SQL);
     }
 
-    public void delete (Entity entity) {
+    public void delete (Object entity) {
         SQL = "";
-        /*
-        for (EntityField field: entity.getEntityFields()){
-            SQL = field.getField();
-        }
-        */
         DDAList.add(SQL);
     }
 
