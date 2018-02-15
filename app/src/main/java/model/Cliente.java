@@ -1,29 +1,30 @@
 package model;
 
+import agile.core.orm.*;
+
 /**
  * Created by Lucas Chinelate on 14/02/2018.
  */
 
-import agile.core.orm.*;
+@Entity(tableName = "CLIENTE")
+public class Cliente {
 
-public class Cliente extends Entity{
+    @Field(fieldName = "ID")
+    public Integer id;
 
-    public Cliente() {
-        this.setTableName("CLIENTE");
-        this.addField("ID", "COD_CLIENTE");
-        this.addField("NOME","NOM_CLIENTE","NOME NÃO INFORMADO");
+    @Field(fieldName = "NOME")
+    public String nome;
+
+    public int getId() {
+        return this.id;
     }
 
-    public int getId() throws Exception {
-        return (Integer) this.getFieldValue("ID");
+    public String getNome(){
+        return this.nome;
     }
 
-    public String getNome() throws Exception {
-        return (String) this.getFieldValue("NOME");
-    }
-
-    public void setNome(String Value) throws Exception {
-        this.setFieldValue("NOME", Value);
+    public void setNome(String Value) {
+        this.nome = Value;
     }
 
 }
