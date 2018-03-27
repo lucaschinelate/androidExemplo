@@ -13,4 +13,11 @@ public class Entity {
     public List<Field> Fields;
 
     public List<Id> Ids;
+
+    public String databaseAction;
+
+    @Override
+    public boolean equals(Object o) {
+        return true;
+    }
 }

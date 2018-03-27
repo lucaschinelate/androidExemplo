@@ -1,29 +1,29 @@
 package com.jhcconsultoria.entregas;
 
-import android.os.Bundle;
-import agile.core.system.activity.StandardActivity;
 import agile.core.orm.DataBase;
 import agile.core.orm.connector.SQLiteConnector;
-import model.*;
-import android.util.Log;
+import agile.core.system.activity.StandardActivity;
+import model.Cliente;
+import android.widget.TextView;
+import org.androidannotations.annotations.*;
 
+@EActivity(R.layout.activity_main)
 public class MainActivity extends StandardActivity {
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    @ViewById TextView txtHeloWorld;
 
+    @AfterViews
+    void testeCliente() {
         Cliente cliente = new Cliente();
         DataBase db = new DataBase(new SQLiteConnector());
 
         try {
             cliente.setNome("LUCAS CORREA CHINELATE");
             db.persist(cliente);
-
+            txtHeloWorld.setText(cliente.getNome());
         } catch (Exception e) {
-            Log.i("AGILE",e.getMessage());
+            txtHeloWorld.setText(e.getMessage());
         }
-
     }
+
 }

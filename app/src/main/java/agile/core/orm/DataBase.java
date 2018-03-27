@@ -31,6 +31,7 @@ public class DataBase {
 
     public void delete (Object entity) {
         SQL = "";
+        Entity iEntity = dictionary.extractEntity(entity);
         DDAList.add(SQL);
     }
 

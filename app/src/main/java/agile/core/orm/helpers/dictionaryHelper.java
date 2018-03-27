@@ -31,15 +31,14 @@ public class dictionaryHelper {
 
         for (java.lang.reflect.Field att: object.getClass().getDeclaredFields()) {
 
-            if (att.isAnnotationPresent()) {
-
-            }
-
             annotation = att.getAnnotation(agile.core.orm.annotation.Field.class);
             if (annotation != null) {
                 agile.core.orm.annotation.Field fieldAnnotation = (agile.core.orm.annotation.Field) annotation;
                 att.setAccessible(true);
 
+                /*
+                 * Recupera os annotations IDs da entidade
+                 */
                 annotation = att.getAnnotation(agile.core.orm.annotation.Id.class);
                 if (annotation != null) {
                     try {
@@ -55,6 +54,9 @@ public class dictionaryHelper {
                     }
                 }
 
+                /*
+                 * Recupera o valor dos campos
+                 */
                 try {
                     Field field = new Field();
                     field.Name = fieldAnnotation.fieldName();
