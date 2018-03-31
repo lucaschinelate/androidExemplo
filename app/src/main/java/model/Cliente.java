@@ -32,4 +32,8 @@ public class Cliente {
         this.nome = Value;
     }
 
+    public void setId(int Value) {
+        this.id = Value;
+    }
+
 }

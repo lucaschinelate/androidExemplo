@@ -1,6 +1,8 @@
 package agile.core.orm;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import agile.core.orm.connector.Connector;
 import android.database.Cursor;
@@ -16,27 +18,34 @@ import agile.core.orm.helpers.*;
 
 public class DataBase {
     private Connector connector;
-    private List<String> DDAList; //DIRECT DATABASE ACCESSS LIST
     private String SQL;
+    private HashSet<Entity> entities;
+
     private dictionaryHelper dictionary;
 
-    public void persist (Object entity) {
+    public void persist (Object entity) throws Exception {
         SQL = "";
 
         dictionary = new dictionaryHelper();
 
         Entity iEntity = dictionary.extractEntity(entity);
-        DDAList.add(SQL);
+
+        if (!entities.contains(iEntity)) {
+            entities.add(iEntity);
+        } else {
+            entities.remove(iEntity);
+            entities.add(iEntity);
+        }
     }
 
     public void delete (Object entity) {
         SQL = "";
         Entity iEntity = dictionary.extractEntity(entity);
-        DDAList.add(SQL);
     }
 
     public DataBase(Connector connector) {
-        DDAList = new ArrayList<String>();
+        entities = new HashSet<>();
+
         this.connector = connector;
     }
 
@@ -68,15 +77,13 @@ public class DataBase {
         this.connector.commit();
     }
 
-    public boolean flush () {
+    public boolean flush () throws Exception {
         try {
-            for (String command: DDAList) {
-                this.connector.execSQL(command);
-            }
-            DDAList.clear();
+
         } catch (Exception ex) {
             return false;
         }
-        return true;
+        throw new Exception(entities.size() + " Records");
+        //return true;
     }
 }
