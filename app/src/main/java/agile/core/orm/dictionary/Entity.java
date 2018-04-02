@@ -14,7 +14,7 @@ public class Entity {
 
     public List<Id> Ids;
 
-    public String databaseAction;
+    public int databaseAction;
 
     @Override
     public String toString() {

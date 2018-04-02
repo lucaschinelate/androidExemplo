@@ -20,7 +20,8 @@ public class MainActivity extends StandardActivity {
 
         try {
             addCliente(1,"LUCAS CORREA CHINELATE");
-            addCliente(1, "RODRIGO");
+            addCliente(2, "RODRIGO");
+            removeCliente(3);
             db.flush();
             txtHeloWorld.setText("Clientes Inseridos com sucesso");
         } catch (Exception e) {
@@ -33,6 +34,12 @@ public class MainActivity extends StandardActivity {
             cliente.setId(idCliente);
             cliente.setNome(nomeCliente);
         db.persist(cliente);
+    }
+
+    private void removeCliente(int idCliente) throws Exception {
+        Cliente cliente = new Cliente();
+        cliente.setId(idCliente);
+        db.delete(cliente);
     }
 
 }
