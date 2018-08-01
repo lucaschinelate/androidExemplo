@@ -1,5 +1,6 @@
 package agile.core.orm;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -30,8 +31,6 @@ public class DataBase {
 
     public void persist (Object entity) throws Exception {
         SQL = "";
-
-        dictionary = new dictionaryHelper();
 
         Entity iEntity = dictionary.extractEntity(entity);
 
@@ -74,6 +73,7 @@ public class DataBase {
 
     public DataBase(Connector connector) {
         entities = new HashSet<>();
+        dictionary = new dictionaryHelper();
 
         this.connector = connector;
     }
@@ -123,6 +123,42 @@ public class DataBase {
             }
         }
         return null;
+    }
+
+
+    public String findOneBy (Class entity, Filter filter) {
+
+        Entity iEntity = dictionary.getStructure(entity);
+
+        String Query = "SELECT ";
+        for   (Field field: iEntity.Fields) {
+            if (Query.equals("SELECT ")) {
+                Query += field.Name;
+            } else {
+                Query += ", " + field.Name;
+            }
+        }
+        Query += " FROM " + iEntity.TableName + " WHERE";
+
+        boolean findFilter = false;
+        for   (Field field: iEntity.Fields) {
+            if (field.Name.equals(filter.fieldName)) {
+                findFilter = true;
+                if (field.Type.equals(String.class)) {
+                    Query += " " + field.Name + " = '" + filter.value + "'";
+                } else {
+                    Query += " " + field.Name + " = " + filter.value;
+                }
+            }
+        }
+        if (findFilter == false) {
+            /*
+             * @ToDo Disparar expection generica
+             */
+        }
+
+        return Query;
+
     }
 
 }

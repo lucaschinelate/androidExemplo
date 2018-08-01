@@ -1,32 +1,46 @@
 package com.jhcconsultoria.entregas;
 
 import agile.core.orm.DataBase;
+import agile.core.orm.Filter;
 import agile.core.orm.connector.SQLiteConnector;
+import agile.core.orm.dictionary.Entity;
 import agile.core.system.activity.StandardActivity;
 import model.Cliente;
+import android.database.Cursor;
 import android.widget.TextView;
 import org.androidannotations.annotations.*;
+import android.database.sqlite.SQLiteDatabase;
+
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 
 @EActivity(R.layout.activity_main)
 public class MainActivity extends StandardActivity {
 
     private DataBase db;
+    SQLiteDatabase db2;
 
     @ViewById TextView txtHeloWorld;
 
     @AfterViews
     void testeCliente() {
-        db = new DataBase(new SQLiteConnector());
+        db = new DataBase(new SQLiteConnector(this, R.string.principal));
 
         try {
-            addCliente(1,"LUCAS CORREA CHINELATE");
-            addCliente(2, "RODRIGO");
-            removeCliente(3);
-            db.flush();
-            txtHeloWorld.setText("Clientes Inseridos com sucesso");
+
+            //txtHeloWorld.setText("Iniciando app");
+            //addCliente(1,"LUCAS CORREA CHINELATE");
+            //addCliente(2, "RODRIGO");
+            ///removeCliente(2);
+            //Cursor result = db.rawQuery("SELECT * FROM CLIENTE WHERE COD_CLIENTE = 1");
+            //db.flush();
+
+            txtHeloWorld.setText(db.findOneBy(Cliente.class, new Filter().setFieldName("NOME").setValue("TESTE")));
+
         } catch (Exception e) {
-            txtHeloWorld.setText(e.getMessage());
+            txtHeloWorld.setText(e.toString());
         }
+
     }
 
     private void addCliente(int idCliente, String nomeCliente) throws Exception {

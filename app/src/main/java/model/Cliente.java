@@ -18,8 +18,6 @@ public class Cliente {
     @Field(fieldName = "NOME")
     private String nome;
 
-    private String teste;
-
     public int getId() {
         return this.id;
     }

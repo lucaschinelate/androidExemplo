@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="principal">/data/data/com.jhcconsultoria.entregas/agile.db</string>
+</resources>
