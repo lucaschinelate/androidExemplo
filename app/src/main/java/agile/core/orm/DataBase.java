@@ -126,7 +126,15 @@ public class DataBase {
     }
 
 
-    public String findOneBy (Class entity, Filter filter) {
+    public Object[] findBy (Class entity, Filter[] filters) {
+        return null;
+    }
+
+    public Object findOneBy (Class entity, Filter[] filters) {
+        return null;
+    }
+
+    public Object findOneBy (Class entity, Filter filter) throws Exception {
 
         Entity iEntity = dictionary.getStructure(entity);
 
@@ -138,6 +146,7 @@ public class DataBase {
                 Query += ", " + field.Name;
             }
         }
+
         Query += " FROM " + iEntity.TableName + " WHERE";
 
         boolean findFilter = false;
@@ -151,13 +160,17 @@ public class DataBase {
                 }
             }
         }
+
         if (findFilter == false) {
-            /*
-             * @ToDo Disparar expection generica
-             */
+            /* @ToDo Disparar expection generica */
         }
 
-        return Query;
+        Cursor curValues = this.rawQuery(Query);
+
+        if (curValues.getCount() == 0)
+            return null;
+
+        return dictionary.populate(entity, curValues );
 
     }
 

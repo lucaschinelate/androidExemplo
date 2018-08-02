@@ -1,6 +1,9 @@
 package agile.core.orm.helpers;
 
+import android.database.Cursor;
+
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 
 import agile.core.orm.dictionary.Entity;
@@ -12,6 +15,33 @@ import agile.core.orm.dictionary.Id;
  */
 
 public class dictionaryHelper {
+
+
+    public <T> T populate( Class<T> entity, Cursor cursor) throws Exception {
+
+        Annotation annotation = null;
+        cursor.moveToFirst();
+
+        T objEntity =  entity.newInstance();
+
+        for (java.lang.reflect.Field att: entity.getDeclaredFields()) {
+            annotation = att.getAnnotation(agile.core.orm.annotation.Field.class);
+            if (annotation != null) {
+                agile.core.orm.annotation.Field fieldAnnotation = (agile.core.orm.annotation.Field) annotation;
+                att.setAccessible(true);
+
+                if (att.getType().equals(Integer.class)) {
+                    att.set(objEntity, cursor.getInt(cursor.getColumnIndex(fieldAnnotation.fieldName().toString())));
+                } else {
+                    att.set(objEntity, cursor.getString(cursor.getColumnIndex(fieldAnnotation.fieldName().toString())));
+                }
+            }
+
+        }
+
+        return objEntity;
+
+    }
 
     public Entity getStructure (Class object) {
         return this.translate(null, object , false);

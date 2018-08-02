@@ -12,10 +12,10 @@ import agile.core.orm.annotation.Id;
 public class Cliente {
 
     @Id
-    @Field(fieldName = "ID")
+    @Field(fieldName = "COD_CLIENTE")
     private Integer id;
 
-    @Field(fieldName = "NOME")
+    @Field(fieldName = "DSC_CLIENTE")
     private String nome;
 
     public int getId() {

@@ -28,14 +28,20 @@ public class MainActivity extends StandardActivity {
 
         try {
 
-            //txtHeloWorld.setText("Iniciando app");
-            //addCliente(1,"LUCAS CORREA CHINELATE");
-            //addCliente(2, "RODRIGO");
-            ///removeCliente(2);
-            //Cursor result = db.rawQuery("SELECT * FROM CLIENTE WHERE COD_CLIENTE = 1");
-            //db.flush();
+            txtHeloWorld.setText("Iniciando app");
 
-            txtHeloWorld.setText(db.findOneBy(Cliente.class, new Filter().setFieldName("NOME").setValue("TESTE")));
+            Cliente cliente = findCliente(1);
+            if (cliente != null) {
+                txtHeloWorld.setText("O nome do cliente é: " + cliente.getNome());
+            } else {
+                txtHeloWorld.setText("Nenhum Cliente encontrado com este código");
+            }
+
+            addCliente(1,"LUCAS CORREA CHINELATE");
+            addCliente(2, "RODRIGO");
+            removeCliente(2);
+
+            db.flush();
 
         } catch (Exception e) {
             txtHeloWorld.setText(e.toString());
@@ -56,4 +62,10 @@ public class MainActivity extends StandardActivity {
         db.delete(cliente);
     }
 
+    private Cliente findCliente(int idCliente) throws Exception{
+
+        Cliente cliente = (Cliente) db.findOneBy(Cliente.class, new Filter().setFieldName("COD_CLIENTE").setValue("1"));
+
+        return cliente;
+    }
 }
