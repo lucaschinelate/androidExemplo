@@ -3,16 +3,11 @@ package com.jhcconsultoria.entregas;
 import agile.core.orm.DataBase;
 import agile.core.orm.Filter;
 import agile.core.orm.connector.SQLiteConnector;
-import agile.core.orm.dictionary.Entity;
 import agile.core.system.activity.StandardActivity;
 import model.Cliente;
-import android.database.Cursor;
 import android.widget.TextView;
 import org.androidannotations.annotations.*;
 import android.database.sqlite.SQLiteDatabase;
-
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
 
 @EActivity(R.layout.activity_main)
 public class MainActivity extends StandardActivity {

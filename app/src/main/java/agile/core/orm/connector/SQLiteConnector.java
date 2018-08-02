@@ -31,7 +31,6 @@ public class SQLiteConnector implements Connector {
 
     @Override
     public boolean rollback() {
-
         return false;
     }
 
