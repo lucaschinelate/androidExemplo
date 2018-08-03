@@ -17,30 +17,39 @@ import agile.core.orm.dictionary.Id;
 public class dictionaryHelper {
 
 
-    public <T> T populate( Class<T> entity, Cursor cursor) throws Exception {
+    public <T> T[] populate( Class<T> entity, Cursor cursor) throws Exception {
 
         Annotation annotation = null;
         cursor.moveToFirst();
 
-        T objEntity =  entity.newInstance();
+        T[] arrayResult = (T[]) new Object[cursor.getCount()];
 
-        for (java.lang.reflect.Field att: entity.getDeclaredFields()) {
-            annotation = att.getAnnotation(agile.core.orm.annotation.Field.class);
-            if (annotation != null) {
-                agile.core.orm.annotation.Field fieldAnnotation = (agile.core.orm.annotation.Field) annotation;
-                att.setAccessible(true);
+        String[] str = null;
+        str = new String[10];
 
-                if (att.getType().equals(Integer.class)) {
-                    att.set(objEntity, cursor.getInt(cursor.getColumnIndex(fieldAnnotation.fieldName().toString())));
-                } else {
-                    att.set(objEntity, cursor.getString(cursor.getColumnIndex(fieldAnnotation.fieldName().toString())));
+        for (int i = 0; i < cursor.getCount(); i++) {
+            cursor.moveToPosition(i);
+
+            T objEntity =  entity.newInstance();
+
+            for (java.lang.reflect.Field att: entity.getDeclaredFields()) {
+                annotation = att.getAnnotation(agile.core.orm.annotation.Field.class);
+                if (annotation != null) {
+                    agile.core.orm.annotation.Field fieldAnnotation = (agile.core.orm.annotation.Field) annotation;
+                    att.setAccessible(true);
+
+                    if (att.getType().equals(Integer.class)) {
+                        att.set(objEntity, cursor.getInt(cursor.getColumnIndex(fieldAnnotation.fieldName().toString())));
+                    } else {
+                        att.set(objEntity, cursor.getString(cursor.getColumnIndex(fieldAnnotation.fieldName().toString())));
+                    }
                 }
             }
 
+            arrayResult[i] = objEntity;
         }
 
-        return objEntity;
-
+        return arrayResult;
     }
 
     public Entity getStructure (Class object) {

@@ -126,52 +126,85 @@ public class DataBase {
     }
 
 
-    public Object[] findBy (Class entity, Filter[] filters) {
-        return null;
-    }
-
-    public Object findOneBy (Class entity, Filter[] filters) {
-        return null;
-    }
-
-    public Object findOneBy (Class entity, Filter filter) throws Exception {
-
+    private String getQuery (Class entity, Filter[] filters) {
         Entity iEntity = dictionary.getStructure(entity);
 
-        String Query = "SELECT ";
+        String query = "SELECT ";
         for   (Field field: iEntity.Fields) {
-            if (Query.equals("SELECT ")) {
-                Query += field.Name;
+            if (query.equals("SELECT ")) {
+                query += field.Name;
             } else {
-                Query += ", " + field.Name;
+                query += ", " + field.Name;
             }
         }
 
-        Query += " FROM " + iEntity.TableName + " WHERE";
+        query += " FROM " + iEntity.TableName + " WHERE";
 
-        boolean findFilter = false;
-        for   (Field field: iEntity.Fields) {
-            if (field.Name.equals(filter.fieldName)) {
-                findFilter = true;
-                if (field.Type.equals(String.class)) {
-                    Query += " " + field.Name + " = '" + filter.value + "'";
-                } else {
-                    Query += " " + field.Name + " = " + filter.value;
+        boolean findFilter;
+        for (Filter filter: filters) {
+            findFilter = false;
+            for   (Field field: iEntity.Fields) {
+                if (field.Name.equals(filter.fieldName)) {
+                    findFilter = true;
+                    if (field.Type.equals(String.class)) {
+                        query += " " + field.Name + " = '" + filter.value + "'";
+                    } else {
+                        query += " " + field.Name + " = " + filter.value;
+                    }
+                    break;
                 }
             }
+            if (findFilter == false) {
+                /* @ToDo Disparar expection generica */
+            }
         }
 
-        if (findFilter == false) {
-            /* @ToDo Disparar expection generica */
-        }
+        return query;
+    }
 
-        Cursor curValues = this.rawQuery(Query);
+    public Object[] findBy (Class entity, Filter[] filters) throws Exception {
+        String query = this.getQuery(entity, filters);
+
+        Cursor curValues = this.rawQuery(query);
 
         if (curValues.getCount() == 0)
             return null;
 
-        return dictionary.populate(entity, curValues );
+        Object[] result = dictionary.populate(entity, curValues );
+
+        return result;
+    }
+
+    public Object findOneBy (Class entity, Filter[] filters) throws Exception {
+
+        return this.findBy(entity, filters)[0];
 
     }
 
+    public Object findOneBy (Class entity, Filter filter) throws Exception {
+
+        Filter[] filters = {filter};
+
+        return this.findOneBy(entity, filters);
+
+    }
+
+    public Object findOneBy (Class entity, Object value) throws Exception {
+
+        Entity iEntity = dictionary.getStructure(entity);
+
+        if (iEntity.Ids.size() == 0) {
+            /* @ToDo Disparar expection "A entidade não tem nenhum ID definido" */
+        }
+
+        if (iEntity.Ids.size() > 1 ) {
+            /* @ToDo Disparar expection "A entidade possui chave composta" */
+        }
+
+        Id id = iEntity.Ids.get(0);
+        Filter filter = new Filter().setFieldName(id.Name).setValue(value.toString());
+
+        return this.findOneBy(entity, filter);
+
+    }
 }
