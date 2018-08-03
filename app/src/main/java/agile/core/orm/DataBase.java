@@ -125,7 +125,6 @@ public class DataBase {
         return null;
     }
 
-
     private String getQuery (Class entity, Filter[] filters) {
         Entity iEntity = dictionary.getStructure(entity);
 
@@ -177,7 +176,11 @@ public class DataBase {
 
     public Object findOneBy (Class entity, Filter[] filters) throws Exception {
 
-        return this.findBy(entity, filters)[0];
+        Object[] result = this.findBy(entity, filters);
+
+        if (result == null) return null;
+
+        return result[0];
 
     }
 
@@ -207,4 +210,5 @@ public class DataBase {
         return this.findOneBy(entity, filter);
 
     }
+
 }

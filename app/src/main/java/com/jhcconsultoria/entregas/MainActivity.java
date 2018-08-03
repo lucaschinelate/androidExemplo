@@ -25,7 +25,7 @@ public class MainActivity extends StandardActivity {
 
             txtHeloWorld.setText("Iniciando app");
 
-            Cliente cliente = (Cliente) db.findOneBy(Cliente.class, 2);
+            Cliente cliente = (Cliente) db.findOneBy(Cliente.class, 3);
 
             if (cliente != null) {
                 txtHeloWorld.setText("O nome do cliente é: " + cliente.getNome());
