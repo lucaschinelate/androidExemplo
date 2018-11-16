@@ -140,7 +140,8 @@ public class DataBase {
             }
 
         } catch (Exception ex) {
-            return false;
+            flushDML.clear();
+            throw new Exception((ex.getMessage()));
         }
         return true;
     }
