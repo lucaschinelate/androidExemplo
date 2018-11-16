@@ -6,9 +6,11 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 
+import agile.core.orm.DataBase;
 import agile.core.orm.dictionary.Entity;
 import agile.core.orm.dictionary.Field;
 import agile.core.orm.dictionary.Id;
+import agile.core.orm.valuesExtrator.ValuesExtrator;
 
 /**
  * Created by Lucas Chinelate on 15/02/2018.
@@ -16,6 +18,11 @@ import agile.core.orm.dictionary.Id;
 
 public class dictionaryHelper {
 
+    private ValuesExtrator valuesExtrator;
+
+    public dictionaryHelper(ValuesExtrator valuesExtrator) {
+        this.valuesExtrator = valuesExtrator;
+    }
 
     public <T> T[] populate( Class<T> entity, Cursor cursor) throws Exception {
 
@@ -58,6 +65,61 @@ public class dictionaryHelper {
 
     public Entity extractEntity (Object object) {
         return this.translate(object, object.getClass(),true);
+    }
+
+    public String getSQL (Entity iEntity) {
+        String _sql = "";
+
+        if (iEntity.databaseAction == DataBase.INSERT_ACTION) {
+            String _sqlFields = "";
+            String _sqlValues = "";
+
+            for (Field field: iEntity.Fields) {
+                String _value = valuesExtrator.getStringFromValue(field.Value, field.Type);
+
+                if (!(_sqlFields.equals(""))) _sqlFields = _sqlFields + ", ";
+                _sqlFields = _sqlFields + field.Name;
+
+                if (!(_sqlValues.equals(""))) _sqlValues = _sqlValues + ", ";
+                _sqlValues = _sqlValues + _value;
+            }
+
+            _sql = "INSERT INTO " + iEntity.TableName + "(" + _sqlFields + ") VALUES (" + _sqlValues + ")";
+
+        } else if (iEntity.databaseAction == DataBase.UPDATE_ACTION) {
+            String _sqlFields = "";
+            String _sqlId = "";
+
+            for (Field field: iEntity.Fields) {
+                String _value = valuesExtrator.getStringFromValue(field.Value, field.Type);
+
+                if (!(_sqlFields.equals(""))) _sqlFields = _sqlFields + ", ";
+                _sqlFields = _sqlFields + field.Name + " = " + _value;
+            }
+
+            for (Id id: iEntity.Ids) {
+                String _value = valuesExtrator.getStringFromValue(id.Value, id.Type);
+
+                if (!(_sqlId.equals(""))) _sqlId = _sqlId + " AND ";
+                _sqlId = id.Name + " = " + _value;
+            }
+
+            _sql = "UPDATE " + iEntity.TableName + " SET " + _sqlFields + " WHERE " + _sqlId;
+
+        } else if (iEntity.databaseAction == DataBase.DELETE_ACTION) {
+
+            String _sqlId = "";
+            for (Id id: iEntity.Ids) {
+                String _value = valuesExtrator.getStringFromValue(id.Value, id.Type);
+
+                if (!(_sqlId.equals(""))) _sqlId = _sqlId + " AND ";
+                _sqlId = id.Name + " = " + _value;
+            }
+
+            _sql = "DELETE FROM " + iEntity.TableName + " WHERE " + _sqlId;
+        }
+
+        return _sql;
     }
 
     private Entity translate (Object object, Class clss, boolean values) {

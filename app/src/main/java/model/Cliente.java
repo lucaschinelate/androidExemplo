@@ -3,6 +3,7 @@ package model;
 import agile.core.orm.annotation.Entity;
 import agile.core.orm.annotation.Field;
 import agile.core.orm.annotation.Id;
+import agile.core.orm.annotation.JoinField;
 
 /**
  * Created by Lucas Chinelate on 14/02/2018.
@@ -18,20 +19,19 @@ public class Cliente {
     @Field(fieldName = "DSC_CLIENTE")
     private String nome;
 
-    public int getId() {
-        return this.id;
+    public Integer getId() {
+        return id;
     }
 
-    public String getNome(){
-        return this.nome;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public void setNome(String Value) {
-        this.nome = Value;
+    public String getNome() {
+        return nome;
     }
 
-    public void setId(int Value) {
-        this.id = Value;
+    public void setNome(String nome) {
+        this.nome = nome;
     }
-
 }

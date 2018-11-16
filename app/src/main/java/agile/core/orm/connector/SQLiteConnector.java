@@ -20,7 +20,8 @@ public class SQLiteConnector implements Connector {
 
     @Override
     public boolean execSQL(String SQL) {
-        return false;
+        db.execSQL(SQL);
+        return true;
     }
 
     @Override

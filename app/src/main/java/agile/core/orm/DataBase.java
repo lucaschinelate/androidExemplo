@@ -1,16 +1,17 @@
 package agile.core.orm;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+
 import agile.core.orm.connector.Connector;
 import android.database.Cursor;
 
 import agile.core.orm.dictionary.*;
 import agile.core.orm.dictionary.Entity;
 import agile.core.orm.helpers.*;
+import agile.core.orm.valuesExtrator.SQLiteValues;
+import agile.core.orm.valuesExtrator.ValuesExtrator;
 
 
 /**
@@ -26,10 +27,11 @@ public class DataBase {
     private Connector connector;
     private String SQL;
     private HashSet<Entity> entities;
+    private List<String> flushDML;
 
     private dictionaryHelper dictionary;
 
-    public void persist (Object entity) throws Exception {
+    public Object persist (Object entity) throws Exception {
         SQL = "";
 
         Entity iEntity = dictionary.extractEntity(entity);
@@ -45,11 +47,16 @@ public class DataBase {
                 throw new Exception("Attempt to change entity marked for deletion - " + iEntity.toString());
             }
 
-            iEntity.databaseAction = oldEntity.databaseAction;
+            iEntity.databaseAction = UPDATE_ACTION;
 
             entities.remove(oldEntity);
             entities.add(iEntity);
         }
+
+        SQL = dictionary.getSQL(iEntity);
+        flushDML.add(SQL);
+
+        return entity;
     }
 
     public void delete (Object entity) throws Exception {
@@ -64,18 +71,23 @@ public class DataBase {
 
         entities.remove(oldEntity);
 
-        if (oldEntity.databaseAction != INSERT_ACTION) {
-            iEntity.databaseAction = DELETE_ACTION ;
-            entities.add(iEntity);
-        }
+        iEntity.databaseAction = DELETE_ACTION ;
 
+        entities.add(iEntity);
+
+        SQL = dictionary.getSQL(iEntity);
+        flushDML.add(SQL);
+    }
+
+    public DataBase(Connector connector, ValuesExtrator valuesExtrator) {
+        entities = new HashSet<>();
+        flushDML = new ArrayList<String>();
+        dictionary = new dictionaryHelper(valuesExtrator);
+        this.connector = connector;
     }
 
     public DataBase(Connector connector) {
-        entities = new HashSet<>();
-        dictionary = new dictionaryHelper();
-
-        this.connector = connector;
+        this(connector, new SQLiteValues());
     }
 
     public Connector getConnector() {
@@ -108,12 +120,34 @@ public class DataBase {
 
     public boolean flush () throws Exception {
         try {
+            for (String query: flushDML) {
+                this.execSQL(query);
+            }
+            flushDML.clear();
+
+            ArrayList<Entity> deletedEntity = new ArrayList<Entity>();
+
+            for(Entity iEntity: entities) {
+                if (iEntity.databaseAction == DELETE_ACTION) {
+                    deletedEntity.add(iEntity);
+                } else if (iEntity.databaseAction == INSERT_ACTION) {
+                    iEntity.databaseAction = UPDATE_ACTION;
+                }
+            }
+
+            for (Entity iEntity: deletedEntity) {
+                entities.remove(iEntity);
+            }
 
         } catch (Exception ex) {
             return false;
         }
-        throw new Exception(entities.size() + " Records");
-        //return true;
+        return true;
+    }
+
+    public boolean clear () {
+        entities.clear();
+        return true;
     }
 
     private Entity findElementInCollection (Entity compareElement) {
@@ -170,6 +204,14 @@ public class DataBase {
             return null;
 
         Object[] result = dictionary.populate(entity, curValues );
+
+        for(Object objEntity: result) {
+            Entity iEntity = dictionary.extractEntity(objEntity);
+            if (!entities.contains(iEntity)) {
+                iEntity.databaseAction = UPDATE_ACTION;
+                entities.add(iEntity);
+            }
+        }
 
         return result;
     }
