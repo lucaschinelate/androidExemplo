@@ -29,6 +29,7 @@ public class MainActivity extends StandardActivity {
             if (cliPriscila != null) {
                 cliPriscila.setNome("PRISCILA A");
                 db.persist(cliPriscila);
+                cliPriscila.getNome();
             }
 
             Cliente cliRodrigo  = addCliente(3, "RODRIGO");

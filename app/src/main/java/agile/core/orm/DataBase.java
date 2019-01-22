@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import agile.core.orm.exception.OrmException;
+import agile.core.orm.exception.Cathalog;
 import agile.core.orm.connector.Connector;
 import android.database.Cursor;
 
@@ -44,7 +46,7 @@ public class DataBase {
             Entity oldEntity = this.findElementInCollection(iEntity);
 
             if (oldEntity.databaseAction == DELETE_ACTION) {
-                throw new Exception("Attempt to change entity marked for deletion - " + iEntity.toString());
+                throw new OrmException(Cathalog.ATTEMPT_TO_CHANGE_ENTITY, iEntity);
             }
 
             iEntity.databaseAction = UPDATE_ACTION;
